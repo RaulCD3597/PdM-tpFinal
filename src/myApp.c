@@ -5,6 +5,16 @@
  *      Author: raulcamacho
  */
 
+#include "sapi.h"
 
+int main(void) {
 
+	boardInit();
+
+	while (TRUE) {
+
+	}
+
+	return 0;
+}
 
