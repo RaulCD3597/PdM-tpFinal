@@ -17,12 +17,33 @@ int main(void) {
 	boardInit();
 	bluetooth_Init();
 	uartConfig( UART_USB, 9600 );
-	uint8_t msg[256] = "";
-	uint8_t numOfChar = 0;
+	uint8_t msg[100] = "";
+	uint8_t receiveBuffer[50] = "";
 
 	for (;;) {
-		if(bluetooth_Read(msg)){
+		if (bluetooth_Read(msg)) {
+			delay(50);
+			uint8_t id = 0;
+			bluetooth_Parser(msg, &id, receiveBuffer);
+			if (id == 1) {
+				gpioWrite(LED1, OFF);
+				gpioWrite(LED2, ON);
+				gpioWrite(LEDB, OFF);
+			} else if (id == 2) {
+				gpioWrite(LED1, ON);
+				gpioWrite(LED2, OFF);
+				gpioWrite(LEDB, OFF);
+			}else if (id == 3) {
+				gpioWrite(LED1, OFF);
+				gpioWrite(LED2, OFF);
+				gpioWrite(LEDB, ON);
+			}  else {
+				gpioWrite(LED1, OFF);
+				gpioWrite(LED2, OFF);
+				gpioWrite(LEDB, OFF);
+			}
 			uartWriteString(UART_USB, msg);
+			memset(msg, 0, sizeof(msg));
 		}
 	}
 
