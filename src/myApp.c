@@ -6,7 +6,9 @@
  */
 
 #include "sapi.h"
+#include "myApp.h"
 #include "bluetooth.h"
+#include "myApp_UART.h"
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
@@ -16,7 +18,7 @@ int main(void) {
 
 	boardInit();
 	bluetooth_Init();
-	uartConfig( UART_USB, 9600 );
+	miApp_UART_Init();
 	uint8_t msg[100] = "";
 	uint8_t receiveBuffer[50] = "";
 
@@ -42,7 +44,6 @@ int main(void) {
 				gpioWrite(LED2, OFF);
 				gpioWrite(LEDB, OFF);
 			}
-			uartWriteString(UART_USB, msg);
 			memset(msg, 0, sizeof(msg));
 		}
 	}
