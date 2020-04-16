@@ -9,6 +9,7 @@
 #include "myApp.h"
 #include "bluetooth.h"
 #include "myApp_UART.h"
+#include "debounce.h"
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
@@ -19,10 +20,16 @@ int main(void) {
 	boardInit();
 	bluetooth_Init();
 	miApp_UART_Init();
+	static debounceButton_t patientSttended;
+	debounceSM_Init(&patientSttended, TEC1);
 	uint8_t msg[100] = "";
 	uint8_t receiveBuffer[50] = "";
 
 	for (;;) {
+		debounceSM_Update(&patientSttended);
+		if (patientSttended.buttonReleased == TRUE){
+			miApp_UART_Send(1, NULL);
+		}
 		if (bluetooth_Read(msg)) {
 			delay(50);
 			uint8_t id = 0;
