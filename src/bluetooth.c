@@ -32,11 +32,11 @@ static void get_ID(uint8_t* msg, uint8_t *pId);
  */
 static void get_Msg(uint8_t* msg, uint8_t *receiveBuffer);
 
-void bluetooth_Init(void){
-	uartConfig( BLUETOOTH, BT_BAUDRATE );
+void bluetooth_Init(void) {
+	uartConfig( BLUETOOTH, BT_BAUDRATE);
 }
 
-bool_t bluetooth_Read(uint8_t *msg){
+bool_t bluetooth_Read(uint8_t *msg) {
 	uint8_t data = 0;
 	uint8_t number = 0;
 	bool_t retVal = FALSE;
@@ -60,11 +60,11 @@ static void get_ID(uint8_t* msg, uint8_t *pId) {
 		search = strstr(search, SEPARATOR);
 		search += SPC_TO_CONTENT;
 		if (!strncmp(search, EMERGENCY_ID, 1)) {
-			*pId = EMERGENCY;
+			*pId = EMERGENCY_BT;
 		} else if ((!strncmp(search, NORMAL_ID, 1))) {
-			*pId = NORMAL;
+			*pId = NORMAL_BT;
 		} else if ((!strncmp(search, LOWBATT_ID, 1))) {
-			*pId = LOWBATT;
+			*pId = LOWBATT_BT;
 		} else {
 			*pId = NO_ID;
 		}
@@ -77,6 +77,8 @@ static void get_Msg(uint8_t* msg, uint8_t *receiveBuffer) {
 		search = strstr(search, SEPARATOR);
 		search += SPC_TO_CONTENT;
 		uint8_t length = strlen(search);
-		strncpy(receiveBuffer,search,length);
+		strncpy(receiveBuffer, search, length);
+	} else {
+		memset(receiveBuffer, 0, sizeof(receiveBuffer));
 	}
 }

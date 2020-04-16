@@ -20,9 +20,9 @@
  */
 enum{
 	NO_ID = 0,
-	EMERGENCY,
-	NORMAL,
-	LOWBATT
+	EMERGENCY_BT,
+	NORMAL_BT,
+	LOWBATT_BT
 };
 /**
  * funcion bluetooth_Init
