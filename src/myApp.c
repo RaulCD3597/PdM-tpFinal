@@ -17,11 +17,12 @@ int main(void) {
 	boardInit();
 	bluetooth_Init();
 	uartConfig( UART_USB, 9600 );
-	uint8_t msg[256] = "";
+	uint8_t msg[50] = "";
+	uint8_t size = 50;
 	uint8_t numOfChar = 0;
 
 	for (;;) {
-		if(bluetooth_Read(msg)){
+		if(bluetooth_Read(msg, &size)){
 			uartWriteString(UART_USB, msg);
 		}
 	}

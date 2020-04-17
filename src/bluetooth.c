@@ -11,19 +11,57 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-void bluetooth_Init(void){
-	uartConfig( BLUETOOTH, BT_BAUDRATE );
+#define BT_MAX_WAIT_TIME 200
+
+typedef enum {
+	BT_RECEIVING, BT_TIME_OUT
+} btState_t;
+
+typedef struct {
+	uint8_t index;
+	btState_t state;
+	delay_t btDelay;
+} btDevice_t;
+
+bool_t bluetooth_update(btDevice_t *pbtDevice, char* receiveBuffer,
+		uint8_t* receiveBufferSize);
+
+void bluetooth_Init(void) {
+	uartConfig(BLUETOOTH, BT_BAUDRATE);
 }
 
-bool_t bluetooth_Read(uint8_t *msg){
-	uint8_t data = 0;
-	uint8_t number = 0;
+bool_t bluetooth_Read(char* receiveBuffer, uint8_t* receiveBufferSize) {
+	btDevice_t myBT;
+	myBT.state = BT_RECEIVING;
+	delayInit(&(myBT.btDelay), BT_MAX_WAIT_TIME);
+	myBT.index = 0;
 	bool_t retVal = FALSE;
-	memset(msg, 0, sizeof(msg));
-	while (uartReadByte(BLUETOOTH, &data) && (data != '\r') && (data != '\n')) {
-		msg[number] = data;
-		number++;
-		retVal = TRUE;
+	while (myBT.state == BT_RECEIVING) {
+		retVal = bluetooth_update(&myBT, receiveBuffer, receiveBufferSize);
 	}
 	return retVal;
+}
+
+bool_t bluetooth_update(btDevice_t *pbtDevice, char* receiveBuffer,
+		uint8_t* receiveBufferSize) {
+
+	uint8_t receiveByte;
+	if (uartReadByte( BLUETOOTH, &receiveByte)) {
+		if (pbtDevice->index < *receiveBufferSize) {
+			receiveBuffer[(pbtDevice->index)] = receiveByte;
+			(pbtDevice->index)++;
+		} else {
+			pbtDevice->state = BT_TIME_OUT;
+			if (pbtDevice->index > 0) {
+				return TRUE;
+			}
+		}
+		if (delayRead(&(pbtDevice->btDelay))) {
+			pbtDevice->state = BT_TIME_OUT;
+			if (pbtDevice->index > 0) {
+				return TRUE;
+			}
+		}
+	}
+	return FALSE;
 }
