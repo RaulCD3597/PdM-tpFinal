@@ -17,6 +17,7 @@
 #define BLUETOOTH UART_232
 #define BT_BAUDRATE 9600
 #define SPC_TO_CONTENT 2
+#define BT_MAX_WAIT_TIME 100
 /**
  * Funcion get_ID
  * @brief Obtiene el ID del mensaje
@@ -37,14 +38,18 @@ void bluetooth_Init(void) {
 }
 
 bool_t bluetooth_Read(uint8_t *msg) {
-	uint8_t data = 0;
-	uint8_t number = 0;
+	delay_t mydelay;
+	uint8_t receiveByte;
+	uint8_t index = 0;
+	delayInit(&mydelay, BT_MAX_WAIT_TIME);
 	bool_t retVal = FALSE;
 	memset(msg, 0, sizeof(msg));
-	while (uartReadByte(BLUETOOTH, &data) && (data != '\r') && (data != '\n')) {
-		msg[number] = data;
-		number++;
-		retVal = TRUE;
+	while (!(delayRead(&mydelay))) {
+		if (uartReadByte( BLUETOOTH, &receiveByte)) {
+			msg[index] = receiveByte;
+			index++;
+			retVal = TRUE;
+		}
 	}
 	return retVal;
 }

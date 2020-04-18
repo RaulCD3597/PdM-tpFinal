@@ -47,7 +47,6 @@ void deviceSM_Update(void) {
 		gpioWrite(LED2, OFF);
 		gpioWrite(LEDB, OFF);
 		if (bluetooth_Read(msg)) {
-			delay(50);
 			bluetooth_Parser(msg, &id, receiveBuffer);
 			switch (id) {
 			case EMERGENCY_BT:
@@ -73,7 +72,6 @@ void deviceSM_Update(void) {
 		gpioWrite(LEDB, OFF);
 		debounceSM_Update(&patientAttended);
 		if (bluetooth_Read(msg)) {
-			delay(50);
 			bluetooth_Parser(msg, &id, receiveBuffer);
 			if (id == LOWBATT_BT) {
 				mainState = EM_LOW_BATT;
@@ -90,7 +88,6 @@ void deviceSM_Update(void) {
 		gpioWrite(LEDB, OFF);
 		debounceSM_Update(&patientAttended);
 		if (bluetooth_Read(msg)) {
-			delay(50);
 			bluetooth_Parser(msg, &id, receiveBuffer);
 			if (id == LOWBATT_BT) {
 				mainState = NOR_LOW_BATT;
@@ -110,7 +107,6 @@ void deviceSM_Update(void) {
 		gpioWrite(LEDB, ON);
 		debounceSM_Update(&patientAttended);
 		if (bluetooth_Read(msg)) {
-			delay(50);
 			bluetooth_Parser(msg, &id, receiveBuffer);
 			if (id == NORMAL_BT) {
 				mainState = NOR_LOW_BATT;
@@ -132,6 +128,13 @@ void deviceSM_Update(void) {
 		if (patientAttended.buttonReleased) {
 			mainState = IDLE;
 		}
+		/**
+		 * Se lee lo que llega de bluetooth pese a no necesitarlo
+		 * para vaciar el buffer del dispositivo, ya que el usuario puede
+		 * enviar mensajes quedan sin ser leidos sino se llama a la funcion
+		 * bluetooth_Read
+		 */
+		bluetooth_Read(msg);
 		break;
 	case NOR_LOW_BATT:
 		gpioWrite(LED1, ON);
@@ -139,7 +142,6 @@ void deviceSM_Update(void) {
 		gpioWrite(LEDB, ON);
 		debounceSM_Update(&patientAttended);
 		if (bluetooth_Read(msg)) {
-			delay(50);
 			bluetooth_Parser(msg, &id, receiveBuffer);
 			if (id == EMERGENCY_BT) {
 				mainState = EM_LOW_BATT;
