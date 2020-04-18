@@ -31,13 +31,18 @@ void bluetooth_Init(void) {
 }
 
 bool_t bluetooth_Read(char* receiveBuffer, uint8_t* receiveBufferSize) {
-	btDevice_t myBT;
-	myBT.state = BT_RECEIVING;
-	delayInit(&(myBT.btDelay), BT_MAX_WAIT_TIME);
-	myBT.index = 0;
+	delay_t mydelay;
+	uint8_t receiveByte;
+	uint8_t index = 0;
+	delayInit(&mydelay, BT_MAX_WAIT_TIME);
 	bool_t retVal = FALSE;
-	while (myBT.state == BT_RECEIVING) {
-		retVal = bluetooth_update(&myBT, receiveBuffer, receiveBufferSize);
+	memset(receiveBuffer, 0, sizeof(receiveBuffer));
+	while (!(delayRead(&mydelay))) {
+		if (uartReadByte( BLUETOOTH, &receiveByte)) {
+			receiveBuffer[index] = receiveByte;
+			index++;
+			retVal = TRUE;
+		}
 	}
 	return retVal;
 }
