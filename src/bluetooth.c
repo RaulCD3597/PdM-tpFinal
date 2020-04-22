@@ -17,6 +17,8 @@
 #define BLUETOOTH UART_232
 #define BT_BAUDRATE 9600
 #define SPC_TO_CONTENT 2
+#define MSG_SPC_TO_CONTENT 3
+#define MSG_SPC_TO_END 4
 #define BT_MAX_WAIT_TIME 100
 /**
  * Funcion get_ID
@@ -80,9 +82,9 @@ static void get_Msg(uint8_t* msg, uint8_t *receiveBuffer) {
 	uint8_t *search = strstr(msg, MSG_STRING);
 	if (search != NULL) {
 		search = strstr(search, SEPARATOR);
-		search += SPC_TO_CONTENT;
+		search += MSG_SPC_TO_CONTENT;
 		uint8_t length = strlen(search);
-		strncpy(receiveBuffer, search, length);
+		strncpy(receiveBuffer, search, length - MSG_SPC_TO_END);
 	} else {
 		memset(receiveBuffer, 0, sizeof(receiveBuffer));
 	}
