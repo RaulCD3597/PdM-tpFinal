@@ -55,7 +55,11 @@ bool_t bluetooth_Read(uint8_t *msg) {
 	}
 	return retVal;
 }
-
+/**
+ * Se espera que los mensajes que llegan esten en formato json segun la
+ * siguiente plantilla:
+ * 		{"id": ID, "msg": "mensaje del paciente"}
+ */
 void bluetooth_Parser(uint8_t* msg, uint8_t *pId, uint8_t *receiveBuffer) {
 	get_ID(msg, pId);
 	get_Msg(msg, receiveBuffer);
